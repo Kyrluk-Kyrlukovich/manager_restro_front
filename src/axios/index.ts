@@ -2,7 +2,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 export const apiInstance = axios.create({
-	baseURL: "http://localhost:80/api/",
+	baseURL: "http://94.26.225.206:81/api/",
 });
 
 apiInstance.defaults.withCredentials = true;
