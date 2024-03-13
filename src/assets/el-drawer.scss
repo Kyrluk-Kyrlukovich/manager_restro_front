@@ -1,0 +1,9 @@
+.el-drawer {
+  @media (max-width: 768px) {
+    width: 50% !important;
+  }
+
+  @media (max-width: 470px) {
+    width: 80% !important;
+  }
+}
