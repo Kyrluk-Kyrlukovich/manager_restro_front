@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import { ElMessage, TabsPaneContext } from "element-plus";
-import { slice } from "lodash";
-import { onMounted, ref } from "vue";
+import { debounce, slice } from "lodash";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import {
@@ -31,6 +31,10 @@ const dishes = ref();
 const formEditOrder = ref();
 const formCreateOrder = ref();
 const data = ref();
+const width = ref(0);
+const style = computed(() => "width: " + Number(width.value) + "px");
+const aside = document.querySelector(".el-menu.el-menu--vertical");
+width.value = window.innerWidth - aside?.clientWidth - 90;
 
 function translateStatus(status) {
 	switch (status) {
@@ -202,23 +206,37 @@ async function handleGetOrderDishes(id: string | number) {
 }
 
 handleGetOrders();
+
+const debounceResize = debounce((target) => {
+	let aside = document.querySelector(".el-menu.el-menu--vertical");
+	let table = document.querySelector(".el-descriptions__body");
+	width.value = target.innerWidth - aside?.clientWidth - 90;
+}, 500);
+
+window.addEventListener("resize", function (event) {
+	debounceResize(event.target);
+});
 </script>
 
 <template>
 	<div>
 		<el-skeleton animated :loading="isInitLoading">
 			<div class="mt-6 flex flex-col flex-wrap justify-center gap-2">
-				<el-skeleton animated :loading="isInitLoading">
-					<el-tabs v-model="data.tabs.active" class="mt-6" @tab-click="handleGetOrders">
-						<el-tab-pane
-							v-for="(value, key) in data?.tabs?.items"
-							:label="value"
-							:name="key"
+				<div class="w-full">
+					<el-skeleton animated :loading="isInitLoading">
+						<el-tabs
+							v-model="data.tabs.active"
+							class="mt-6"
+							@tab-click="handleGetOrders"
 						>
-							{{ value }}
-						</el-tab-pane>
-					</el-tabs>
-				</el-skeleton>
+							<el-tab-pane
+								v-for="(value, key) in data?.tabs?.items"
+								:label="value"
+								:name="key"
+							></el-tab-pane>
+						</el-tabs>
+					</el-skeleton>
+				</div>
 				<div class="self-end">
 					<el-button
 						type="primary"
@@ -234,123 +252,136 @@ handleGetOrders();
 				</div>
 				<el-skeleton animated :loading="isInitLoading">
 					<el-card v-for="order in data.orders" :id="order.id" :key="order.id">
-						<el-scrollbar>
-							<div class="w-full flex flex-col gap-1">
-								<h2>Заказ №{{ order.id }}</h2>
-								<el-descriptions direction="vertical" :column="6" border>
-									<el-descriptions-item label="Статус">
-										<el-tag
-											class="border-amber-700"
-											effect="plain"
-											:type="typeOfStatus(order.status)"
+						<div class="w-full flex flex-col gap-1">
+							<h2>Заказ №{{ order.id }}</h2>
+							<el-scrollbar>
+								<div class="flex overflow-auto" :style="style">
+									<el-descriptions
+										class="description-block"
+										direction="vertical"
+										:column="6"
+										border
+									>
+										<el-descriptions-item label="Статус">
+											<el-tag
+												class="border-amber-700"
+												effect="plain"
+												:type="typeOfStatus(order.status)"
+											>
+												{{ translateStatus(order.status) }}
+											</el-tag>
+										</el-descriptions-item>
+										<el-descriptions-item label="Ответственный за заказ">
+											<div class="text-[14px]">
+												<RouterLink
+													:to="
+														appRoutes.SETTINGS_PAGE.getPath(
+															order.responsible?.id,
+														)
+													"
+												>
+													<el-tooltip content="Перейти к пользователю">
+														<div class="flex items-center gap-2">
+															<el-avatar
+																:size="30"
+																:src="
+																	order.responsible?.avatar
+																		? setUrl(
+																				order.responsible
+																					.avatar,
+																		  )
+																		: 'http://localhost:5173/src/assets/icons/avatar_blank.png'
+																"
+															/>
+															<div class="text-[14px]">
+																{{ order.responsible.name }}
+															</div>
+														</div>
+													</el-tooltip>
+												</RouterLink>
+											</div>
+										</el-descriptions-item>
+										<el-descriptions-item
+											label="Ответственный за приготовление"
 										>
-											{{ translateStatus(order.status) }}
-										</el-tag>
-									</el-descriptions-item>
-									<el-descriptions-item label="Ответственный за заказ">
-										<div class="text-[14px]">
-											<RouterLink
-												:to="
-													appRoutes.SETTINGS_PAGE.getPath(
-														order.responsible?.id,
-													)
-												"
-											>
-												<el-tooltip content="Перейти к пользователю">
-													<div class="flex items-center gap-2">
-														<el-avatar
-															:size="30"
-															:src="
-																order.responsible?.avatar
-																	? setUrl(
-																			order.responsible
-																				.avatar,
-																	  )
-																	: 'http://localhost:5173/src/assets/icons/avatar_blank.png'
-															"
-														/>
-														<div class="text-[14px]">
-															{{ order.responsible.name }}
+											<div class="text-[14px]">
+												<RouterLink
+													:to="
+														appRoutes.SETTINGS_PAGE.getPath(
+															order.chef?.id,
+														)
+													"
+												>
+													<el-tooltip content="Перейти к пользователю">
+														<div class="flex items-center gap-2">
+															<el-avatar
+																:size="30"
+																:src="
+																	order.chef?.avatar
+																		? setUrl(order.chef.avatar)
+																		: 'http://localhost:5173/src/assets/icons/avatar_blank.png'
+																"
+															/>
+															<div class="text-[14px]">
+																{{ order.chef.name }}
+															</div>
 														</div>
-													</div>
-												</el-tooltip>
-											</RouterLink>
-										</div>
-									</el-descriptions-item>
-									<el-descriptions-item label="Ответственный за приготовление">
-										<div class="text-[14px]">
-											<RouterLink
-												:to="
-													appRoutes.SETTINGS_PAGE.getPath(order.chef?.id)
-												"
-											>
-												<el-tooltip content="Перейти к пользователю">
-													<div class="flex items-center gap-2">
-														<el-avatar
-															:size="30"
-															:src="
-																order.chef?.avatar
-																	? setUrl(order.chef.avatar)
-																	: 'http://localhost:5173/src/assets/icons/avatar_blank.png'
-															"
-														/>
-														<div class="text-[14px]">
-															{{ order.chef.name }}
-														</div>
-													</div>
-												</el-tooltip>
-											</RouterLink>
-										</div>
-									</el-descriptions-item>
-									<el-descriptions-item label="Примечание к заказу">
-										<span>{{ order.notes }}</span>
-									</el-descriptions-item>
-									<el-descriptions-item label="Дата создания">
-										<span>
-											{{ dayjs(order.created).format("YYYY-MM-DD HH:mm") }}
-										</span>
-									</el-descriptions-item>
-									<el-descriptions-item label="Стол">
-										<el-tag type="info">№{{ order.table }}</el-tag>
-									</el-descriptions-item>
-								</el-descriptions>
-								<div class="py-2 w-fit">
-									<el-button
-										type="info"
-										@click="
-											() => {
-												handleGetOrderDishes(order.id);
-												isDialogDishes = true;
-											}
-										"
-									>
-										Позиции заказа
-									</el-button>
-									<el-button
-										type="primary"
-										@click="
-											() => {
-												handleGetFormEditOrder(order.id);
-												editId = order.id;
-												isEditDrawer = true;
-											}
-										"
-									>
-										Редактировать
-									</el-button>
-									<el-button
-										v-if="order.canChangeStatus"
-										:text="order.changeStatus === 'finish' ? true : false"
-										:disabled="order.changeStatus === 'finish' ? true : false"
-										:color="order.changeStatus === 'ready' ? '#008080' : ''"
-										:type="typeOfStatus(order.changeStatus)"
-										@click="handleUpdateStatus(order.id, order.changeStatus)"
-									>
-										{{ translateStatus(order.changeStatus) }}
-									</el-button>
+													</el-tooltip>
+												</RouterLink>
+											</div>
+										</el-descriptions-item>
+										<el-descriptions-item label="Примечание к заказу">
+											<span>{{ order.notes }}</span>
+										</el-descriptions-item>
+										<el-descriptions-item label="Дата создания">
+											<span>
+												{{
+													dayjs(order.created).format("YYYY-MM-DD HH:mm")
+												}}
+											</span>
+										</el-descriptions-item>
+										<el-descriptions-item label="Стол">
+											<el-tag type="info">№{{ order.table }}</el-tag>
+										</el-descriptions-item>
+									</el-descriptions>
 								</div>
+							</el-scrollbar>
+							<div class="py-2 w-fit btns">
+								<el-button
+									type="info"
+									@click="
+										() => {
+											handleGetOrderDishes(order.id);
+											isDialogDishes = true;
+										}
+									"
+								>
+									Позиции заказа
+								</el-button>
+								<el-button
+									type="primary"
+									@click="
+										() => {
+											handleGetFormEditOrder(order.id);
+											editId = order.id;
+											isEditDrawer = true;
+										}
+									"
+								>
+									Редактировать
+								</el-button>
+								<el-button
+									v-if="order.canChangeStatus"
+									:text="order.changeStatus === 'finish' ? true : false"
+									:disabled="order.changeStatus === 'finish' ? true : false"
+									:color="order.changeStatus === 'ready' ? '#008080' : ''"
+									:type="typeOfStatus(order.changeStatus)"
+									@click="handleUpdateStatus(order.id, order.changeStatus)"
+								>
+									{{ translateStatus(order.changeStatus) }}
+								</el-button>
 							</div>
-						</el-scrollbar>
+						</div>
 					</el-card>
 				</el-skeleton>
 
@@ -627,5 +658,26 @@ handleGetOrders();
 </template>
 
 <style scoped lang="scss">
+//.description-block {
+//	@media (max-width: 1120px) {
+//		max-width: 500px;
+//	}
+//}
 
+:deep(.el-descriptions__body) {
+	overflow: auto;
+}
+
+@media (max-width: 640px) {
+	.btns {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		gap: 1rem;
+		.el-button {
+			width: 100%;
+			margin: 0;
+		}
+	}
+}
 </style>

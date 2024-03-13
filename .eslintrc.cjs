@@ -37,7 +37,7 @@ module.exports = {
 		"vue/no-multiple-template-root": "off",
 		"vue/max-attributes-per-line": ["error", {
 			"singleline": {
-				"max": 3,
+				"max": 4,
 			},
 			"multiline": {
 				"max": 1,

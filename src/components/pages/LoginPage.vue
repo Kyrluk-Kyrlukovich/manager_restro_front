@@ -3,10 +3,7 @@
 		<div class="login-page__block">
 			<h2 class="text-muted">Вход в систему</h2>
 			<div class="login-page__form">
-				<el-input
-v-model="email"
-clearable placeholder="email"
-size="large" />
+				<el-input v-model="email" clearable placeholder="email" size="large" />
 				<el-input
 					v-model="password"
 					type="password"
@@ -14,10 +11,7 @@ size="large" />
 					placeholder="password"
 					size="large"
 				/>
-				<el-button
-type="primary"
-size="large" class="w-full"
-@click="sign">
+				<el-button type="primary" size="large" class="w-full" @click="sign">
 					Войти
 				</el-button>
 			</div>
@@ -77,6 +71,14 @@ async function sign() {
 		justify-content: center;
 		gap: 1rem;
 		padding: 2rem;
+
+		@media (max-width: 1024px) {
+			width: 45%;
+		}
+
+		@media (max-width: 550px) {
+			width: 75%;
+		}
 	}
 
 	&__form {

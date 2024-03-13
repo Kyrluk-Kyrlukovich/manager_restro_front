@@ -173,19 +173,28 @@ page.setTitlePage("Столы");
 	<div v-loading="isLoading">
 		<el-skeleton animated :loading="isInitLoading">
 			<el-tabs v-model="data.tabs.active" class="mt-6" @tab-click="handleClick">
-				<el-tab-pane v-for="(value, key) in data?.tabs?.items" :label="value" :name="key">
-					{{ value }}
-				</el-tab-pane>
+				<el-tab-pane
+					v-for="(value, key) in data?.tabs?.items"
+					:label="value"
+					:name="key"
+				></el-tab-pane>
 			</el-tabs>
 		</el-skeleton>
 		<el-skeleton animated :loading="isLoading || isInitLoading">
+			<div class="flex justify-end mt-2">
+				<el-button
+					v-if="data.actions"
+					class="self-end mb-3"
+					type="primary"
+					@click="handleGetFormCreateTable"
+				>
+					Создать стол
+				</el-button>
+			</div>
 			<el-table v-loading="isLoading" :data="data.tables" height="450">
 				<el-table-column prop="number" label="Номер стола" />
 				<el-table-column prop="placements" label="Количество посадочных мест" />
-				<el-table-column
-prop="status"
-align="center" label="Статус"
-min-width="140">
+				<el-table-column prop="status" align="center" label="Статус" min-width="140">
 					<template #default="scoped">
 						<el-tag
 							class="w-[120px]"
@@ -318,16 +327,6 @@ min-width="140">
 					</template>
 				</el-table-column>
 			</el-table>
-			<div class="flex justify-end mt-4">
-				<el-button
-					v-if="data.actions"
-					class="self-end"
-					type="primary"
-					@click="handleGetFormCreateTable"
-				>
-					Создать стол
-				</el-button>
-			</div>
 
 			<el-drawer v-model="formDrawer" title="Создание сотрдуника">
 				<template #default>

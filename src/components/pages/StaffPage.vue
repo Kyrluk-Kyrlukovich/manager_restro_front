@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Plus, WarningFilled } from "@element-plus/icons-vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -21,6 +22,8 @@ const drawer = ref(false);
 const dialogVisible = ref(false);
 const userIdForDismiss = ref(null);
 const dialogDismissVisible = ref(false);
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smallerLg = breakpoints.smallerOrEqual("md");
 
 function handleOpenDrawer() {
 	handleGetFromCreateUser();
@@ -109,8 +112,9 @@ page.setTitlePage("Сотрудники");
 		<div class="flex flex-col w-full gap-4">
 			<el-button
 				v-if="data.canCreateUser"
-				class="self-end"
+				class="self-end mt-3"
 				type="primary"
+				:size="smallerLg ? 'small' : 'default'"
 				@click="handleOpenDrawer"
 			>
 				Создать сотрудника

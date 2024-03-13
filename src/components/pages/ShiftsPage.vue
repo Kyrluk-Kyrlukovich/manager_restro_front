@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MoreFilled } from "@element-plus/icons-vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core/index";
 import dayjs from "dayjs";
 import { Action, ElMessage, ElMessageBox } from "element-plus";
 import { ref } from "vue";
@@ -33,6 +34,8 @@ const isFormLoading = ref(true);
 const createDrawer = ref(false);
 const editId = ref();
 const editDrawer = ref(false);
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smallerLg = breakpoints.smallerOrEqual("md");
 async function handleGetShifts() {
 	isInitLoading.value = true;
 	try {
@@ -190,8 +193,12 @@ handleGetShifts();
 <template>
 	<div class="flex flex-col h-full">
 		<el-skeleton :loading="isInitLoading" animated>
-			<div v-if="data.canCreateShift" class="py-2 mt-auto flex w-full justify-end">
-				<el-button type="primary" @click="handleGetFormCreateShift">
+			<div v-if="data.canCreateShift" class="py-2 mt-3 mb-2 flex w-full justify-end">
+				<el-button
+					type="primary"
+					:size="smallerLg ? 'small' : 'default'"
+					@click="handleGetFormCreateShift"
+				>
 					Создать смену
 				</el-button>
 			</div>

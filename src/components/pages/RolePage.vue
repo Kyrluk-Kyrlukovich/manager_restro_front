@@ -96,10 +96,10 @@ handleGetRoles(route.params.id);
 
 <template>
 	<el-skeleton animated :loading="!isInitLoading">
-		<div v-loading="isUpdateLoading" class="flex flex-col gap-8 w-[80%]">
+		<div v-loading="isUpdateLoading" class="root-block flex flex-col gap-8 w-[80%]">
 			<div
 				v-for="(value, key) in data.roots"
-				class="flex gap-2 justify-between items-center border-b-[1px] border-dashed border-slate-400 py-3"
+				class="root-elem flex gap-2 justify-between items-center border-b-[1px] border-dashed border-slate-400 py-3"
 			>
 				<div class="font-medium">
 					<el-tooltip :content="getRootName(key)">
@@ -121,5 +121,17 @@ handleGetRoles(route.params.id);
 </template>
 
 <style scoped lang="scss">
-
+.root-elem {
+	@media (max-width: 640px) {
+		flex-direction: column;
+		justify-content: center;
+		align-items: start;
+		width: 100%;
+	}
+}
+.root-block {
+	@media (max-width: 640px) {
+		width: 100%;
+	}
+}
 </style>

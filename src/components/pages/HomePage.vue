@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ArrowDown, BellFilled, DArrowRight, InfoFilled, Setting } from "@element-plus/icons-vue";
+import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
 import { ElIcon, ElMessage, ElNotification } from "element-plus";
 import { debounce } from "lodash";
 import { computed, h, onMounted, ref, render, watch, watchEffect } from "vue";
@@ -18,7 +19,7 @@ import type { dtoLoginInfo } from "@/types";
 import { useUserStore } from "@/userStore";
 
 const isLoading = ref(true);
-const isCollapse = ref(false);
+const isCollapse = ref<Boolean>(false);
 const user = useUserStore();
 const page = usePageStore();
 const router = useRouter();
@@ -32,6 +33,10 @@ const noReadNotificationCount = computed(() => notifications.value.filter((el) =
 const pageTitle = computed(() => page.title);
 const asideSmallClass = computed(() => (isCollapse.value ? "asideSmall" : ""));
 const dialogVisible = ref(false);
+
+const breakpoints = useBreakpoints(breakpointsTailwind);
+const smallerLg = breakpoints.smallerOrEqual("md");
+isCollapse.value = smallerLg;
 
 async function fetch() {
 	try {
