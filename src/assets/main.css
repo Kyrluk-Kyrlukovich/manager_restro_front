@@ -1,6 +1,7 @@
 @import './base.css';
 @import "el-inputs.scss";
 @import "el-drawer.scss";
+@import "el-dialog.scss";
 
 @tailwind base;
 @tailwind components;
