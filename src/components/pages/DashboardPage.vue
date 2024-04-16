@@ -10,15 +10,35 @@ const isInitLoading = ref(false);
 const dataOrdersAndCosts = ref([]);
 const costs = computed(() => dataOrdersAndCosts.value?.costs ?? []);
 const countOrders = computed(() => dataOrdersAndCosts.value?.countOrders ?? []);
-const daysOfWeek = computed(() => dataOrdersAndCosts.value?.daysOfWeek ?? []);
+const daysOfWeekIncome = computed(() => dataOrdersAndCosts.value?.daysOfWeekCost ?? []);
+const daysOfWeekOrders = computed(() => dataOrdersAndCosts.value?.daysOfWeekCountOrders ?? []);
+const periodOrders = ref(getPeriod(7, true));
+const periodIncome = ref(getPeriod(7, true));
+
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const smallerLg = breakpoints.smallerOrEqual("lg");
+const smallerMd = breakpoints.smallerOrEqual("md");
+const smallerXs = breakpoints.smallerOrEqual("sm");
 const seriesCountOrders = reactive([
 	{
 		name: "Количество заказов за день",
 		data: countOrders,
 	},
 ]);
+
+const responsiveChartWidth = computed(() => {
+	return !smallerLg.value
+		? "1000px"
+		: !smallerMd.value
+		? "500px"
+		: !smallerXs.value
+		? "500px"
+		: "300px";
+});
+
+const responsiveElGroup = computed(() =>
+	!smallerLg.value ? "large" : !smallerMd.value ? "default" : "small",
+);
 
 function getShortsDaysOfWeek(arrayDaysOfWeeks) {
 	return arrayDaysOfWeeks.value.map((day) => {
@@ -43,7 +63,16 @@ function getShortsDaysOfWeek(arrayDaysOfWeeks) {
 	});
 }
 
-const shortsDaysOfWeek = computed(() => getShortsDaysOfWeek(daysOfWeek));
+const shortsDaysOfWeekIncome = computed(() =>
+	dataOrdersAndCosts.value?.countOrdersDate
+		? daysOfWeekIncome.value
+		: getShortsDaysOfWeek(daysOfWeekIncome),
+);
+const shortsDaysOfWeekOrders = computed(() =>
+	dataOrdersAndCosts.value?.countIncomeDate
+		? daysOfWeekOrders.value
+		: getShortsDaysOfWeek(daysOfWeekOrders),
+);
 
 const seriesCosts = reactive([
 	{
@@ -53,16 +82,32 @@ const seriesCosts = reactive([
 ]);
 let options = reactive({
 	chart: {
-		height: 350,
+		height: 400,
 		width: "80%",
-		type: "bar",
+		type: "area",
+		style: {
+			backgroundColor: "#000",
+		},
 	},
 	responsive: [
 		{
 			breakpoint: 1268,
 			options: {
 				xaxis: {
-					categories: shortsDaysOfWeek,
+					categories: shortsDaysOfWeekIncome,
+				},
+			},
+		},
+		{
+			breakpoint: 768,
+			chart: {
+				height: 150,
+				width: "80%",
+				type: "bar",
+			},
+			options: {
+				xaxis: {
+					categories: shortsDaysOfWeekIncome,
 				},
 			},
 		},
@@ -76,7 +121,7 @@ let options = reactive({
 		},
 	},
 	dataLabels: {
-		enabled: true,
+		enabled: false,
 		formatter: function (val) {
 			return val + "шт";
 		},
@@ -88,7 +133,7 @@ let options = reactive({
 	},
 
 	xaxis: {
-		categories: daysOfWeek,
+		categories: daysOfWeekIncome,
 		position: "top",
 		axisBorder: {
 			show: false,
@@ -122,14 +167,14 @@ let options = reactive({
 		labels: {
 			show: true,
 			formatter: function (val) {
-				return val + "шт";
+				return val.toFixed(0) + "шт";
 			},
 		},
 	},
 	title: {
 		text: "Количество заказов в день за последние 7 дней",
-		floating: true,
-		offsetY: 390,
+		floating: false,
+		offsetY: 415,
 		align: "center",
 		style: {
 			color: "#444",
@@ -141,14 +186,14 @@ let optionsOrders = reactive({
 	chart: {
 		height: 350,
 		width: "80%",
-		type: "bar",
+		type: "area",
 	},
 	responsive: [
 		{
 			breakpoint: 1268,
 			options: {
 				xaxis: {
-					categories: shortsDaysOfWeek,
+					categories: shortsDaysOfWeekOrders,
 				},
 			},
 		},
@@ -162,7 +207,7 @@ let optionsOrders = reactive({
 		},
 	},
 	dataLabels: {
-		enabled: true,
+		enabled: false,
 		formatter: function (val) {
 			return val + "₽";
 		},
@@ -174,7 +219,7 @@ let optionsOrders = reactive({
 	},
 
 	xaxis: {
-		categories: daysOfWeek,
+		categories: daysOfWeekOrders,
 		position: "top",
 		axisBorder: {
 			show: false,
@@ -208,25 +253,28 @@ let optionsOrders = reactive({
 		labels: {
 			show: true,
 			formatter: function (val) {
-				return val + "₽";
+				return val.toFixed(2) + "₽";
 			},
 		},
 	},
 	title: {
 		text: "Доход в день за последние 7 дней",
 		floating: false,
-		offsetY: 390,
+		offsetY: 415,
 		align: "center",
 		style: {
 			color: "#444",
+			fontWeight: 900,
 		},
 	},
 });
 
-async function hadnleGetOrdersAndCosts() {
+async function hadnleGetOrdersAndCosts(periodOrders, periodIncome) {
 	isInitLoading.value = false;
 	try {
-		dataOrdersAndCosts.value = (await getOrdersAndCosts()).data.data;
+		dataOrdersAndCosts.value = (
+			await getOrdersAndCosts({ periodOrders: periodOrders, periodIncome: periodIncome })
+		).data.data;
 		isInitLoading.value = true;
 	} catch (e) {
 		ElMessage.error(getServerError(e));
@@ -236,28 +284,86 @@ async function hadnleGetOrdersAndCosts() {
 	}
 }
 
-hadnleGetOrdersAndCosts();
+function getPeriod(value, revert) {
+	if (!revert) {
+		switch (value) {
+			case "Последнии 7 дней":
+				return 7;
+			case "За 30 дней":
+				return 30;
+			case "за 90 дней":
+				return 90;
+			default:
+				return 7;
+		}
+	} else {
+		switch (value) {
+			case 7:
+				return "Последнии 7 дней";
+			case 30:
+				return "За 30 дней";
+			case 90:
+				return "за 90 дней";
+			default:
+				return "Последнии 7 дней";
+		}
+	}
+}
+
+hadnleGetOrdersAndCosts(getPeriod(periodOrders.value), getPeriod(periodIncome.value));
 </script>
 
 <template>
 	<el-skeleton animated :loading="!isInitLoading">
-		<div class="flex flex-col w-full">
-			<apexchart
-				class="mx-auto"
-				:width="!smallerLg ? '700px' : '500px'"
-				:options="options"
-				:series="seriesCountOrders"
-			></apexchart>
-			<apexchart
-				class="mx-auto"
-				:width="!smallerLg ? '700px' : '500px'"
-				:options="optionsOrders"
-				:series="seriesCosts"
-			></apexchart>
+		<div class="flex justify-center">
+			<div class="flex flex-col gap-4">
+				<el-radio-group
+					v-model="periodOrders"
+					:size="responsiveElGroup"
+					@change="
+						(value) => {
+							hadnleGetOrdersAndCosts(getPeriod(value), getPeriod(periodIncome));
+						}
+					"
+				>
+					<el-radio-button :label="getPeriod(7, true)" />
+					<el-radio-button :label="getPeriod(30, true)" />
+					<el-radio-button :label="getPeriod(90, true)" />
+				</el-radio-group>
+				<apexchart
+					class="mx-auto"
+					:width="responsiveChartWidth"
+					:options="options"
+					:series="seriesCountOrders"
+				></apexchart>
+				<el-radio-group
+					v-model="periodIncome"
+					:size="responsiveElGroup"
+					@change="
+						(value) => {
+							hadnleGetOrdersAndCosts(getPeriod(periodOrders), getPeriod(value));
+						}
+					"
+				>
+					<el-radio-button :label="getPeriod(7, true)" />
+					<el-radio-button :label="getPeriod(30, true)" />
+					<el-radio-button :label="getPeriod(90, true)" />
+				</el-radio-group>
+				<apexchart
+					class="mx-auto"
+					:width="responsiveChartWidth"
+					:options="optionsOrders"
+					:series="seriesCosts"
+				></apexchart>
+			</div>
 		</div>
 	</el-skeleton>
 </template>
 
 <style scoped lang="scss">
-
+.vue-apexcharts {
+	border: 1px solid #dcdfe6;
+	padding: 1rem;
+	border-radius: 10px;
+}
 </style>

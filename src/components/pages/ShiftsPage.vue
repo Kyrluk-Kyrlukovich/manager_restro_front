@@ -205,8 +205,16 @@ handleGetShifts();
 			<el-table v-loading="isInitLoading" :data="data.shifts" height="450">
 				<el-table-column prop="id" label="Номер смены" />
 				<el-table-column prop="name" label="Название смены" />
-				<el-table-column prop="date_start" label="Начало смены" />
-				<el-table-column prop="date_end" label="Конец смены" />
+				<el-table-column prop="date_start" label="Начало смены">
+					<template #default="scope">
+						{{ dayjs(scope.row.date_start).format("HH:mm DD.MM.YYYY") }}
+					</template>
+				</el-table-column>
+				<el-table-column prop="date_end" label="Конец смены">
+					<template #default="scope">
+						{{ dayjs(scope.row.date_end).format("HH:mm DD.MM.YYYY") }}
+					</template>
+				</el-table-column>
 				<el-table-column prop="hours" label="Часов за смену" />
 				<el-table-column prop="count_staff" label="Необходимое количество персонала" />
 				<el-table-column

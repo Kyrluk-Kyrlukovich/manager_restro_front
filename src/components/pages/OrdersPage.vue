@@ -336,7 +336,7 @@ window.addEventListener("resize", function (event) {
 										<el-descriptions-item label="Дата создания">
 											<span>
 												{{
-													dayjs(order.created).format("YYYY-MM-DD HH:mm")
+													dayjs(order.created).format("HH:mm DD.MM.YYYY")
 												}}
 											</span>
 										</el-descriptions-item>
