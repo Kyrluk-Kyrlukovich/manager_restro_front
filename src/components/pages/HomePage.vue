@@ -60,7 +60,6 @@ async function fetch() {
 		user.setNotification(notification);
 		isLoading.value = false;
 	} catch (e) {
-		ElMessage.error(getServerError(e));
 		isLoading.value = false;
 		router.push(appRoutes.LOGIN_PAGE.getPath());
 	} finally {

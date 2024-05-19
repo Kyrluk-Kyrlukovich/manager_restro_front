@@ -277,7 +277,7 @@ async function hadnleGetOrdersAndCosts(periodOrders, periodIncome) {
 		).data.data;
 		isInitLoading.value = true;
 	} catch (e) {
-		ElMessage.error(getServerError(e));
+		// ElMessage.error(getServerError(e));
 		isInitLoading.value = true;
 	} finally {
 		isInitLoading.value = true;
