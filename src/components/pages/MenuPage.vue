@@ -249,12 +249,9 @@ page.setTitlePage("Меню");
 							/>
 						</div>
 
-						<div style="padding: 14px" class="flex flex-col gap-3">
+						<div style="padding: 14px" class="h-full flex flex-col gap-3">
 							<div class="flex gap-3 items-center">
 								<h3>{{ dish.name }}</h3>
-								<el-tag>
-									{{ dish.category }}
-								</el-tag>
 							</div>
 							<div class="text-muted">
 								{{
@@ -263,9 +260,12 @@ page.setTitlePage("Меню");
 										: dish.description
 								}}
 							</div>
-							<div class="flex mt-auto justify-start">
+							<div class="flex mt-auto gap-4 justify-start">
 								<el-tag type="success" size="large" class="mt-2">
 									Цена: {{ dish.cost }}₽
+								</el-tag>
+								<el-tag>
+									{{ dish.category }}
 								</el-tag>
 							</div>
 							<div class="flex w-full">
