@@ -264,7 +264,7 @@ page.setTitlePage("Меню");
 								<el-tag type="success" size="large" class="mt-2">
 									Цена: {{ dish.cost }}₽
 								</el-tag>
-								<el-tag>
+								<el-tag class="mt-2" size="large">
 									{{ dish.category }}
 								</el-tag>
 							</div>
