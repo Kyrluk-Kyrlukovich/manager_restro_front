@@ -7,6 +7,7 @@ import { useRouter } from "vue-router";
 
 import {
 	createRole,
+	deleteRole,
 	getFormCreateRole,
 	getFormEditRole,
 	getRoles,
@@ -22,6 +23,8 @@ const formEditRole = ref([]);
 const createDrawer = ref(false);
 const editDrawer = ref(false);
 const roleEditId = ref();
+const roleDeleteId = ref();
+const dialogVisible = ref(false);
 const data = ref([]);
 const router = useRouter();
 
@@ -104,6 +107,21 @@ async function handleUpdateRole() {
 	}
 }
 
+async function handleDeleteRole(roleId) {
+	isInitLoading.value = false;
+	try {
+		let response = (await deleteRole(roleId)).data.data;
+		isInitLoading.value = true;
+		await handleGetRoles();
+		ElMessage.success(response.message);
+	} catch (e) {
+		ElMessage.error(getServerError(e));
+		isInitLoading.value = true;
+	} finally {
+		isInitLoading.value = true;
+	}
+}
+
 handleGetRoles();
 </script>
 
@@ -142,7 +160,14 @@ handleGetRoles();
 									>
 										<div>Редактировать</div>
 									</el-dropdown-item>
-									<el-dropdown-item>
+									<el-dropdown-item
+										@click="
+											() => {
+												roleDeleteId = scope.row.id;
+												dialogVisible = true;
+											}
+										"
+									>
 										<div class="text-danger">Удалить</div>
 									</el-dropdown-item>
 								</template>
@@ -152,6 +177,25 @@ handleGetRoles();
 				</el-table>
 			</div>
 		</div>
+		<el-dialog v-model="dialogVisible" width="30%" title="Подтверждение">
+			<span>Вы уверены что хотите удалить роль?</span>
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="dialogVisible = false">Отмена</el-button>
+					<el-button
+						type="danger"
+						@click="
+							() => {
+								handleDeleteRole(roleDeleteId);
+								dialogVisible = false;
+							}
+						"
+					>
+						Удалить
+					</el-button>
+				</span>
+			</template>
+		</el-dialog>
 	</el-skeleton>
 	<el-drawer v-model="createDrawer" title="Создание категории">
 		<template #default>

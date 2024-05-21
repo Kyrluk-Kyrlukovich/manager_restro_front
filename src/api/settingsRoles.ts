@@ -22,3 +22,7 @@ export function createRole(dto) {
 export function updateRole(id, dto) {
 	return apiInstance.put(`/update-role/${id}`, dto);
 }
+
+export function deleteRole(id) {
+	return apiInstance.delete(`/delete-role/${id}`);
+}
