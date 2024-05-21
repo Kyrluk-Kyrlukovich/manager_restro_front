@@ -51,6 +51,12 @@ function getRootName(code) {
 			return "Возможность стать ответственным за приготовление заказа";
 		case "canWatchSettingsRolesTab":
 			return "Просмотр настроек ролей";
+		case "canCreateUser":
+			return "Создание новый пользователей";
+		case "canEditCategories":
+			return "Редактирование категории";
+		case "canEditShift":
+			return "Редактирование смены";
 		default:
 			return "Значение не определено";
 	}
