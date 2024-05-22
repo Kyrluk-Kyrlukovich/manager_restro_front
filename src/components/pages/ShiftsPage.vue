@@ -258,9 +258,7 @@ handleGetShifts();
 									}
 								"
 							>
-								<template #default>
-									<div class="bg-gray-900">+7</div>
-								</template>
+								<div class="bg-gray-900">+{{ scope.row.users.length - 2 }}</div>
 							</el-avatar>
 						</div>
 						<div v-else class="flex justify-center">
@@ -369,6 +367,9 @@ handleGetShifts();
 									ElMessageBox.alert('Вы уверены что хотите удалить смену?', 'Подтверждение', {
 										confirmButtonText: 'OK',
 										callback: (action: Action) => {
+											if(action == 'cancel') {
+												return;
+											}
 										  handleDeleteShift(scope.row.id);
 										},
 									  })
