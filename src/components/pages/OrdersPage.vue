@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Delete } from "@element-plus/icons-vue";
 import dayjs from "dayjs";
 import { ElMessage, TabsPaneContext } from "element-plus";
 import { debounce, slice } from "lodash";
@@ -139,11 +140,9 @@ async function handleUpdateOrder(id: string | number) {
 				dto[field.code] = field.value;
 			}
 		});
-		console.log(route.fullPath);
 		await updateOrder(id, dto);
 		await handleGetOrders();
-		isEditDrawer.value = true;
-		console.log(id, dto);
+		isEditDrawer.value = false;
 		isLoading.value = false;
 	} catch (e) {
 		ElMessage.error(getServerError(e));
@@ -259,7 +258,7 @@ window.addEventListener("resize", function (event) {
 									<el-descriptions
 										class="description-block"
 										direction="vertical"
-										:column="6"
+										:column="7"
 										border
 									>
 										<el-descriptions-item label="Статус">
@@ -343,6 +342,9 @@ window.addEventListener("resize", function (event) {
 										<el-descriptions-item label="Стол">
 											<el-tag type="info">№{{ order.table }}</el-tag>
 										</el-descriptions-item>
+										<el-descriptions-item label="Сумма заказа">
+											<span>{{ order.sum }}</span>
+										</el-descriptions-item>
 									</el-descriptions>
 								</div>
 							</el-scrollbar>
@@ -423,7 +425,7 @@ window.addEventListener("resize", function (event) {
 									<div
 										v-for="(dish, idx) in field.value"
 										:key="idx"
-										class="grid grid-cols-[3fr_1fr_1fr] mb-4 w-full gap-4 items-center"
+										class="grid grid-cols-[3fr_1fr_1fr_1fr] mb-4 w-full gap-4 items-center"
 									>
 										<el-select
 											v-if="dish.dish.type == 'select'"
@@ -459,6 +461,18 @@ window.addEventListener("resize", function (event) {
 													  })?.cost * dish.count.value
 													: 0
 											}}
+										</div>
+										<div>
+											<el-button
+												type="danger"
+												:icon="Delete"
+												circle
+												@click="
+													() => {
+														field.value.pop();
+													}
+												"
+											/>
 										</div>
 									</div>
 									<div>
@@ -553,7 +567,7 @@ window.addEventListener("resize", function (event) {
 									<div
 										v-for="(dish, idx) in field.value"
 										:key="idx"
-										class="grid grid-cols-[3fr_1fr_1fr] mb-4 w-full gap-4 items-center"
+										class="grid grid-cols-[3fr_1fr_1fr_1fr] mb-4 w-full gap-4 items-center"
 									>
 										<el-select
 											v-if="dish.dish.type == 'select'"
@@ -590,6 +604,18 @@ window.addEventListener("resize", function (event) {
 													  })?.cost * dish.count.value
 													: 0
 											}}
+										</div>
+										<div>
+											<el-button
+												type="danger"
+												:icon="Delete"
+												circle
+												@click="
+													() => {
+														field.value.pop();
+													}
+												"
+											/>
 										</div>
 									</div>
 									<div>
