@@ -16,6 +16,7 @@ const daysOfWeekOrders = computed(() => dataOrdersAndCosts.value?.daysOfWeekCoun
 const periodOrders = ref(getPeriod(7, true));
 const periodIncome = ref(getPeriod(7, true));
 const periodDishes = ref(getPeriod(7, true));
+const canViewDataDishes = ref(false);
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const smallerLg = breakpoints.smallerOrEqual("lg");
@@ -349,6 +350,7 @@ async function handleGetDataDishes(period) {
 		const data = (await getDataDishes(period)).data.data;
 		optionsDishes.series = data.dishesCountByPeriod;
 		optionsDishes.labels = data.labels;
+		canViewDataDishes.value = Boolean(data.action);
 		isLoadingDishes.value = true;
 	} catch (e) {
 		// ElMessage.error(getServerError(e));
@@ -431,6 +433,7 @@ handleGetDataDishes(getPeriod(periodDishes.value));
 					:series="seriesCosts"
 				></apexchart>
 				<el-radio-group
+					v-if="canViewDataDishes"
 					v-model="periodDishes"
 					:size="responsiveElGroup"
 					@change="
@@ -444,7 +447,7 @@ handleGetDataDishes(getPeriod(periodDishes.value));
 					<el-radio-button :label="getPeriod(90, true)" />
 				</el-radio-group>
 				<apexchart
-					v-if="isLoadingDishes"
+					v-if="isLoadingDishes && canViewDataDishes"
 					class="mx-auto"
 					:width="responsiveChartWidth"
 					:options="optionsDishes"

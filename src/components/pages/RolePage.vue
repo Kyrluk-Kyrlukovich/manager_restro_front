@@ -57,6 +57,8 @@ function getRootName(code) {
 			return "Редактирование категории";
 		case "canEditShift":
 			return "Редактирование смены";
+		case "canViewDataDishes":
+			return "Просмотр графика самых популярных блюд";
 		default:
 			return "Значение не определено";
 	}

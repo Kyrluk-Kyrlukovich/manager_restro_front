@@ -412,7 +412,7 @@ handleGetShifts();
 						<div>
 							<div>{{ user.first_name }} {{ user.last_name }}</div>
 							<div class="text-[12px] text-slate-400">
-								{{ user.roles == 2 ? "Официант" : "Повар" }}
+								{{ user.roleName }}
 							</div>
 						</div>
 					</div>
