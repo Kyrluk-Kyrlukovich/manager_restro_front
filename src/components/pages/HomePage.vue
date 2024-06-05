@@ -268,7 +268,6 @@ fetch();
 					</el-dialog>
 				</el-skeleton>
 			</el-main>
-			<el-footer>Footer</el-footer>
 		</el-container>
 	</el-container>
 </template>
