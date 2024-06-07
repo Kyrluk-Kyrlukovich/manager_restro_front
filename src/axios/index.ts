@@ -2,7 +2,7 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 export const apiInstance = axios.create({
-	baseURL: "http://api.diplom-vasilev.ru/api",
+	baseURL: "https://api.diplom-vasilev.ru/api",
 });
 
 apiInstance.defaults.withCredentials = true;
