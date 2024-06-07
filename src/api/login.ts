@@ -5,7 +5,7 @@ import type { dtoTypes } from "@/types";
 
 export function login(dto: dtoTypes) {
 	return axios
-		.get("http://localhost:80/sanctum/csrf-cookie")
+		.get("http://api.diplom-vasilev.ru/sanctum/csrf-cookie")
 		.then((r) => apiInstance.post("/login", dto));
 }
 
