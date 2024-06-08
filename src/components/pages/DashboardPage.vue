@@ -281,12 +281,14 @@ let optionsDishes = reactive({
 		type: "pie",
 	},
 	labesls: [],
+
 	responsive: [
 		{
 			breakpoint: 1268,
 			options: {
-				xaxis: {
-					categories: shortsDaysOfWeekOrders,
+				legend: {
+					horizontalAlign: "center",
+					position: "bottom",
 				},
 			},
 		},
