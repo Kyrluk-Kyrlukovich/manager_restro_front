@@ -295,9 +295,6 @@ let optionsDishes = reactive({
 		{
 			breakpoint: 650,
 			options: {
-				legend: {
-					show: false,
-				},
 				chart: {
 					height: "400px",
 				},
