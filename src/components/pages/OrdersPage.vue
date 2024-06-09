@@ -16,6 +16,7 @@ import {
 	updateStatus,
 } from "@/api/ordersSetting";
 import { appRoutes } from "@/navigation/routes";
+import { usePageStore } from "@/pageStore";
 import { getServerError } from "@/shared/getServerError";
 import { setUrl } from "@/shared/getServerImage";
 
@@ -28,6 +29,7 @@ const isEditDrawer = ref(false);
 const isCreateDrawer = ref(false);
 const isDialogDishes = ref(false);
 const dishes = ref();
+const page = usePageStore();
 
 const formEditOrder = ref();
 const formCreateOrder = ref();
@@ -215,6 +217,8 @@ const debounceResize = debounce((target) => {
 window.addEventListener("resize", function (event) {
 	debounceResize(event.target);
 });
+
+page.setTitlePage("Заказы");
 </script>
 
 <template>

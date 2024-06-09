@@ -4,6 +4,7 @@ import { ref, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 
 import { getRoots, updateRoots } from "@/api/settingsRoles";
+import { usePageStore } from "@/pageStore";
 import { getServerError } from "@/shared/getServerError";
 
 import truncateString from "../../shared/truncateString";
@@ -12,6 +13,7 @@ const isInitLoading = ref(true);
 const isUpdateLoading = ref(false);
 const data = ref([]);
 const route = useRoute();
+const page = usePageStore();
 
 function getRootName(code) {
 	switch (code) {
@@ -100,6 +102,7 @@ watchEffect(() => {
 });
 
 handleGetRoles(route.params.id);
+page.setTitlePage("Настройки прав");
 </script>
 
 <template>

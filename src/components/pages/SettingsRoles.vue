@@ -14,6 +14,7 @@ import {
 	updateRole,
 } from "@/api/settingsRoles";
 import { appRoutes } from "@/navigation/routes";
+import { usePageStore } from "@/pageStore";
 import { getServerError } from "@/shared/getServerError";
 
 const isInitLoading = ref(true);
@@ -27,6 +28,7 @@ const roleDeleteId = ref();
 const dialogVisible = ref(false);
 const data = ref([]);
 const router = useRouter();
+const page = usePageStore();
 
 async function handleGetRoles() {
 	isInitLoading.value = false;
@@ -123,6 +125,7 @@ async function handleDeleteRole(roleId) {
 }
 
 handleGetRoles();
+page.setTitlePage("Настройки ролей");
 </script>
 
 <template>
@@ -148,7 +151,7 @@ handleGetRoles();
 											router.push(appRoutes.ROLE_PAGE.getPath(scope.row.id))
 										"
 									>
-										<div>Просмотр</div>
+										<div>Настроить права</div>
 									</el-dropdown-item>
 									<el-dropdown-item
 										@click="

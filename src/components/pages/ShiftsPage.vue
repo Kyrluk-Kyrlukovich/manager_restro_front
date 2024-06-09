@@ -19,10 +19,12 @@ import {
 	updateShift,
 } from "@/api/shifts";
 import { appRoutes } from "@/navigation/routes";
+import { usePageStore } from "@/pageStore";
 import { getServerError } from "@/shared/getServerError";
 import { setUrl } from "@/shared/getServerImage";
 
 const route = useRoute();
+const page = usePageStore();
 
 const data = ref({});
 const isInitLoading = ref(true);
@@ -188,6 +190,7 @@ async function handleEndShift(id) {
 }
 
 handleGetShifts();
+page.setTitlePage("Смены");
 </script>
 
 <template>
