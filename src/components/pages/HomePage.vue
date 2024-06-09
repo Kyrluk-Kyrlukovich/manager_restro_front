@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ArrowDown, BellFilled, DArrowRight, InfoFilled, Setting } from "@element-plus/icons-vue";
 import { breakpointsTailwind, useBreakpoints } from "@vueuse/core";
+import dayjs from "dayjs";
 import { ElIcon, ElMessage, ElNotification } from "element-plus";
 import { debounce } from "lodash";
 import { computed, h, onMounted, ref, render, watch, watchEffect } from "vue";
@@ -188,6 +189,9 @@ fetch();
 								<div>
 									<h2 :class="{ 'no-read': !notify.read }">Уведомление</h2>
 									<div v-html="notify.message"></div>
+									<div>
+										{{ dayjs(notify.created_at).format("YYYY.MM.DD HH:mm") }}
+									</div>
 								</div>
 							</div>
 							<template #footer>

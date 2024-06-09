@@ -188,9 +188,7 @@ page.setTitlePage("Меню");
 					:key="tab.id"
 					:label="tab.name"
 					:name="tab.id"
-				>
-					{{ tab.name }}
-				</el-tab-pane>
+				></el-tab-pane>
 			</el-tabs>
 			<div class="p-4 w-full flex justify-end">
 				<el-button type="primary" size="large" @click="handleGetFormCreateDish">
